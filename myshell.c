@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <readline/readline.h>
+#include <readline/history.h>
+
 int main(int argc, char **argv){
 	//check for arguments cause if that's the case then you should run the script
 	if(argc > 1){
@@ -20,9 +23,17 @@ int main(int argc, char **argv){
 	}
 	else{
 		while(1){
-			printf("$ ");
-		
+			//use readline instead
+			//char *line = readline("$ ");
+			
+			//once things work i'll want to 
+					//take in user input
+					//parse and look for flags to flip flags in the code
+					//run flag functions to do all appropriate actions
+			
+			
 			//first i need to read in the program and arguments i want to run
+			printf("$ ");
 			char text[100];
 			fflush(stdout); // http://c-faq.com/stdio/fflush.html 
   			fgets(text, sizeof text, stdin);
