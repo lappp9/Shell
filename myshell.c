@@ -3,20 +3,7 @@
 #include <string.h>
 int main(int argc, char **argv){
 	//check for arguments cause if that's the case then you should run the script
-	if(argc > 1){
-		FILE *fp;
-		while(--argc > 0){
-			//i used the basic way "The C Programming Language" explains things to read from the files
-			if((fp = fopen(*++argv, "r")) == NULL){
-				if(((strcmp(*argv,"-h")) != 0)  && ((strcmp(*argv,"--help")) != 0)){
-					printf("myshell cannot open %s\n", *argv);
-					return 1;
-				}
-			}
-			else{
-				fclose(fp);
-			}
-		}		
+	if(argc > 1){	
 	}
 	else{
 		while(1){
