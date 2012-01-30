@@ -1,8 +1,8 @@
 myshell: myshell.o
 
-myshell.0: myshell.c
-	
+myshell.o: myshell.c
+
 clean:
 	rm -f *.o
 
-test: myshell 
+test: myshell

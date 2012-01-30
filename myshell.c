@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <readline/readline.h>
-#include <readline/history.h>
+//#include <string.h>
+//#include <readline/readline.h>
 
 int main(int argc, char **argv){
 
@@ -25,14 +24,14 @@ int main(int argc, char **argv){
 		//try to split it into tokens and put into arg array
 		char whitechars[] = " \n\t\r";
 		char* argArray[100];
-		char *tok = NULL;
-		tok = strtok(text, whitechars);
+		char* tok = NULL;
+		*tok = strtok(text, whitechars);
 		int i = 0;
 		while (tok != NULL) {
 			if(tok != NULL){
 				//add tok to the array of args
 				argArray[i] = tok;
-				//printf ("next argument is: %s\n", argArray[i]);
+				printf ("next argument is: %s\n", argArray[i]);
 				tok = strtok(NULL, whitechars);
 				i++;
 			}
