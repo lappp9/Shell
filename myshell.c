@@ -37,7 +37,7 @@ int main(int argc, char **argv){
 		fflush(stdout); // http://c-faq.com/stdio/fflush.html 
   		fgets(text, sizeof text, stdin);
 		//try to split it into tokens and put into arg array
-		char whitechars[] = " \n\t\r";
+		char whitechars[] = " \n\t\r";  
 		char* argArray[100];
 		char *tok = NULL;
 		tok = strtok(text, whitechars);
