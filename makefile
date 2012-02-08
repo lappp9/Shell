@@ -1,7 +1,7 @@
 PAWPRINT=lappp9
 
 myshell: 
-	gcc -lreadline -lhistory -o myshell myshell.0
+	gcc -lreadline -lhistory -o myshell myshell.o
 	
 myshell.o:
 	gcc myshell.c
