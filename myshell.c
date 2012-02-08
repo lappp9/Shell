@@ -4,31 +4,22 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
-int main(int argc, char **argv){
+int main(int argc, char **argv, char *envp[]){
 	//just add the pid to the children array each time one is made
 	int children[1000];
 	int childCount = 0;
 	while(1){
 		
 		char *line = readline("$ ");
+		add_history (line);		
 		//try to split it into tokens and put into arg array
 		char whitechars[] = " \n\t\r";  
 		char* argArray[100];
 		char *tok = NULL;
 		tok = strtok(line, whitechars);
 		int i = 0;
-		if(strcmp(tok,"exit") == 0 ){
-			printf("Exiting...\n");
-			exit(0);
-		}	
 		
-		//reap those zombies
-		/*int k;
-		for(k=0; k < childCount; k++){
-			if(waitpid(children[k],&status,WNOHANG) == pid)
-				//this process is still running	
-				//
-		}*/
+		//parse for command
 		while (tok != NULL) {
 			//add tok to the array of args
 			argArray[i] = tok;
@@ -38,13 +29,42 @@ int main(int argc, char **argv){
 		}
 		argArray[i] = NULL;
 		
-		//now argArray has all the arguments in it
-		//fork into two processes
+		//check for exit command
+		if(strcmp(argArray[0],"exit") == 0 ){
+			printf("Exiting...\n");
+			exit(0);
+		}	
+		
+		//check for changing directory
+		if(strcmp(argArray[0], "cd" ) == 0){
+			
+			if(argArray[1] == NULL){
+				chdir(getenv("HOME"));
+			}
+			else if(chdir(argArray[1])==-1){
+				printf(" cd: %s: No such file or directory\n",argArray[1]);
+			}
+
+			continue;
+		}
+		
+		//check to see if the child will be a background process
 		int background = 0;
 		if(strcmp(argArray[i-1],"&")==0){
 			background = 1;
 			argArray[(i-1)] = NULL;
 		}
+		//reap those zombies
+		/*int k;
+		for(k=0; k < childCount; k++){
+			if(waitpid(children[k],&status,WNOHANG) == pid)
+				//this process is still running	
+				//
+		}*/
+		
+		
+		//now argArray has all the arguments in it
+		//fork into two processes
 		if(strcmp(argArray[0],"jobs") == 0){
 			int j;
 			char* alive;
@@ -82,6 +102,8 @@ int main(int argc, char **argv){
 			}
 			else{
 				waitpid(pid, &status, 0);
+				if(waitpid(pid,&status,WNOHANG) == 0)
+					printf("no zombies");
 			}
 		
 			//if there is an error show it otherwise the loop will replay
