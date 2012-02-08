@@ -25,18 +25,38 @@ int main(int argc, char **argv, char *envp[]){
 		while (tok != NULL) {
 			//add tok to the array of args
 			argArray[i] = tok;
+			
+			//figure out if there is redirection intended for project 3
+			/*if(strcmp(argArray[i],'<')==0){
+				int redirectCharPos = i;
+				char* direction = "left";
+				printf("left");
+			}	
+			else if (strcmp(argArray[i],'>')==0){
+				int redirectCharPos = i;
+				char* direction = "right";
+				printf("right");
+			}*/
 			//printf ("next argument is: %s\n", argArray[i]);
 			tok = strtok(NULL, whitechars);
 			i++;
 		}
 		argArray[i] = NULL;
 		
+		//check for no input
+		if(argArray[0] == NULL){
+			continue;
+		}
 		//check for exit command
 		if(strcmp(argArray[0],"exit") == 0 ){
 			printf("Exiting...\n");
 			exit(0);
 		}	
-		
+		//check for kill command
+		if(strcmp(argArray[0], "kill") == 0){
+			kill(argArray[1],0);
+		}
+
 		//check for changing directory
 		if(strcmp(argArray[0], "cd" ) == 0){
 			
