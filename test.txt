@@ -1,4 +1,9 @@
 ls
 pwd
 ps
+cd ..
+cd 
+ls
+sleep 23 &
+jobs
 exit
