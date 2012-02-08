@@ -2,6 +2,7 @@ ls
 pwd
 ps
 cd ..
+ls
 cd 
 ls
 sleep 23 &
