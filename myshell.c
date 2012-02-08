@@ -11,14 +11,16 @@ int main(int argc, char **argv, char *envp[]){
 	while(1){
 		
 		char *line = readline("$ ");
-		add_history (line);		
+		if(line != NULL){
+			add_history (line);		
+		}
 		//try to split it into tokens and put into arg array
 		char whitechars[] = " \n\t\r";  
 		char* argArray[100];
 		char *tok = NULL;
 		tok = strtok(line, whitechars);
-		int i = 0;
 		
+		int i = 0;
 		//parse for command
 		while (tok != NULL) {
 			//add tok to the array of args
