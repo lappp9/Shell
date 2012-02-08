@@ -16,11 +16,7 @@ int main(int argc, char **argv){
 		char* argArray[100];
 		char *tok = NULL;
 		tok = strtok(line, whitechars);
-		int i = 0;
-		if(strcmp(tok,"exit") == 0 ){
-			printf("Exiting...\n");
-			exit(0);
-		}	
+
 		
 		//reap those zombies
 		/*int k;
@@ -29,6 +25,7 @@ int main(int argc, char **argv){
 				//this process is still running	
 				//
 		}*/
+		int i = 0;
 		while (tok != NULL) {
 			//add tok to the array of args
 			argArray[i] = tok;
@@ -38,13 +35,25 @@ int main(int argc, char **argv){
 		}
 		argArray[i] = NULL;
 		
-		//now argArray has all the arguments in it
-		//fork into two processes
+		//check for no input
+		if(argArray[0] == NULL){
+			continue;
+		}
+		
+		//check for exit
+		if(strcmp(argArray[0],"exit") == 0 ){
+			printf("Exiting...\n");
+			exit(0);
+		}	
+		
+		//check to see if its a background job
 		int background = 0;
 		if(strcmp(argArray[i-1],"&")==0){
 			background = 1;
 			argArray[(i-1)] = NULL;
 		}
+		
+		//check for jobs command
 		if(strcmp(argArray[0],"jobs") == 0){
 			int j;
 			char* alive;
@@ -59,7 +68,9 @@ int main(int argc, char **argv){
 			}
 			
 		}
-		//come on
+		 
+		//now argArray has all the arguments in it
+		//fork into two processes
 		int pid = fork();
 		int status = 0;
 		if (pid == 0) {
