@@ -17,13 +17,13 @@ static zombieKiller(int childCount, int children[], int status){
 	}
 }
 
-static commandFinder(char* argArray[], int childCount, int children[]){
+static commandFinder(char* argArray[], int childCount, int children[], int *background, int i){
 	//check for no input
 	if(argArray[0] == NULL){
 		return;
 	}
 	//check for changing directory
-	else if(strcmp(argArray[0], "cd" ) == 0){
+	if(strcmp(argArray[0], "cd" ) == 0){
 		if(argArray[1] == NULL){
 			chdir(getenv("HOME"));
 		}
@@ -33,7 +33,7 @@ static commandFinder(char* argArray[], int childCount, int children[]){
 		return;
 	}
 	//check for jobs command
-	else if(strcmp(argArray[0],"jobs") == 0){
+	if(strcmp(argArray[0],"jobs") == 0){
 		int j;
 		char* alive;
 		for(j = 0; j<childCount; j++){
@@ -51,7 +51,14 @@ static commandFinder(char* argArray[], int childCount, int children[]){
 	if(strcmp(argArray[0],"exit") == 0 ){
 		printf("Exiting...\n");
 		exit(0);
-	}	
+	}
+	
+	//check to see if it should be a background process
+	if(strcmp(argArray[i-1],"&")==0){
+		*background = 1;
+		argArray[(i-1)] = NULL;
+	}
+		
 }
 
 int main(int argc, char **argv, char *envp[]){
@@ -87,16 +94,12 @@ int main(int argc, char **argv, char *envp[]){
 		argArray[i] = NULL;
 		
 		//check for special commands
-		commandFinder(argArray, childCount, children);
-		if((strcmp(argArray[0],"jobs") == 0) || (strcmp(argArray[0], "cd") == 0) || (argArray[0]==NULL)){
-			continue;
-		}
-		
 		//check to see if the child will be a background process
 		int background = 0;
-		if(strcmp(argArray[i-1],"&")==0){
-			background = 1;
-			argArray[(i-1)] = NULL;
+		commandFinder(argArray, childCount, children, &background, i);
+		
+		if((strcmp(argArray[0],"jobs") == 0) || (strcmp(argArray[0], "cd") == 0) || (argArray[0]==NULL)){
+			continue;
 		}
 		
 		//fork into two processes
