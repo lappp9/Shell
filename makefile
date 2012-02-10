@@ -3,13 +3,6 @@ PAWPRINT=lappp9
 LDLIBS= -lreadline -lhistory
 
 myshell: 
-<<<<<<< HEAD
-	gcc -lreadline -lhistory -o myshell myshell.o
-	
-myshell.o:
-	gcc myshell.c
-=======
->>>>>>> shell3
 
 clean:
 	rm -f *.o
