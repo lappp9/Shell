@@ -17,13 +17,13 @@ static zombieKiller(int childCount, int children[], int status){
 	}
 }
 
-static commandFinder(char* argArray[], int childCount, int children[]){
+static commandFinder(char* argArray[], int childCount, int children[], int *background, int i){
 	//check for no input
 	if(argArray[0] == NULL){
 		return;
 	}
 	//check for changing directory
-	else if(strcmp(argArray[0], "cd" ) == 0){
+	if(strcmp(argArray[0], "cd" ) == 0){
 		if(argArray[1] == NULL){
 			chdir(getenv("HOME"));
 		}
@@ -33,7 +33,7 @@ static commandFinder(char* argArray[], int childCount, int children[]){
 		return;
 	}
 	//check for jobs command
-	else if(strcmp(argArray[0],"jobs") == 0){
+	if(strcmp(argArray[0],"jobs") == 0){
 		int j;
 		char* alive;
 		for(j = 0; j<childCount; j++){
@@ -51,7 +51,22 @@ static commandFinder(char* argArray[], int childCount, int children[]){
 	if(strcmp(argArray[0],"exit") == 0 ){
 		printf("Exiting...\n");
 		exit(0);
-	}	
+	}
+	
+	//check to see if it should be a background process
+	if(strcmp(argArray[i-1],"&")==0){
+		*background = 1;
+		argArray[(i-1)] = NULL;
+	}
+	
+	//check to see if there should be redirection
+	int j;
+	for(j = 0; j < i; j++){
+		if(strcmp(argArray[j], ">")==0){
+			printf("redirect fo sho");
+		} 
+	}
+		
 }
 
 int main(int argc, char **argv, char *envp[]){
@@ -77,6 +92,7 @@ int main(int argc, char **argv, char *envp[]){
 		tok = strtok(line, whitechars);
 		
 		int i = 0;
+		/*
 		//parse for command
 		while (tok != NULL) {
 			//add tok to the array of args
@@ -84,21 +100,34 @@ int main(int argc, char **argv, char *envp[]){
 			tok = strtok(NULL, whitechars);
 			i++;
 		}
+		argArray[i] = NULL;*/
+		
+		int redirect = 0;
+		char* targetFile;
+		//parse for command
+		while (tok != NULL) {
+			//add tok to the array of args
+			//if you come across a redirction make that spot null and later look at i+1 to see where to send stuff
+			if(strcmp(tok, ">")==0){
+				redirect = 1;
+				targetFile = strtok(NULL, whitechars);
+				break;
+			}
+			argArray[i] = tok;
+			tok = strtok(NULL, whitechars);
+			i++;
+		}
 		argArray[i] = NULL;
 		
+		
 		//check for special commands
-		commandFinder(argArray, childCount, children);
+		//check to see if the child will be a background process
+		int background = 0;
+		commandFinder(argArray, childCount, children, &background, i);
+		
 		if((strcmp(argArray[0],"jobs") == 0) || (strcmp(argArray[0], "cd") == 0) || (argArray[0]==NULL)){
 			continue;
 		}
-		
-		//check to see if the child will be a background process
-		int background = 0;
-		if(strcmp(argArray[i-1],"&")==0){
-			background = 1;
-			argArray[(i-1)] = NULL;
-		}
-		
 		//fork into two processes
 		int pid = fork();
 		int status = 0;
@@ -107,8 +136,10 @@ int main(int argc, char **argv, char *envp[]){
 			//to be able to redirect the output to a file instead of stdout you close
 			//file descriptor 1 and then immediately open a file which will fill the spot
 			//you just closed
-			//ex close(1)/
-			//	 FILE* f = fopen('whateverNameTheyGave');
+			if(redirect){
+				close(1);
+				FILE* f = fopen(targetFile, "w");
+			}
 			if(background == 1){	
 				fclose(stdin);
 				fopen("/dev/null", "r");
