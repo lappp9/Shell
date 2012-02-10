@@ -1,17 +1,14 @@
 PAWPRINT=lappp9
 
 myshell: 
-	gcc -lreadline -lhistory -o myshell myshell.0
-	
-myshell.o:
-	gcc myshell.c
+	gcc -lreadline -lhistory -o myshell myshell.c
 
 clean:
 	rm -f *.o
 
 test: myshell
 	cat test.txt | ./myshell
-	
+
 nuke:
 	rm -rf *.o myshell *.gz dist
 

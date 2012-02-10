@@ -2,7 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <readline/readline.h>
-#include <readline/history.h>
+#include <readline/history.h> 
+
+
+//gcc -lreadline -lhistory -o myshell myshell.c
 
 int main(int argc, char **argv, char *envp[]){
 	//just add the pid to the children array each time one is made
@@ -14,6 +17,8 @@ int main(int argc, char **argv, char *envp[]){
 		if(line != NULL){
 			add_history (line);		
 		}
+		
+		
 		//try to split it into tokens and put into arg array
 		char whitechars[] = " \n\t\r";  
 		char* argArray[100];
@@ -106,6 +111,11 @@ int main(int argc, char **argv, char *envp[]){
 		int status = 0;
 		if (pid == 0) {
  	 		//this process is the child and will call exec to replace itself
+			//to be able to redirect the output to a file instead of stdout you close
+			//file descriptor 1 and then immediately open a file which will fill the spot
+			//you just closed
+			//ex close(1)/
+			//	 FILE* f = fopen('whateverNameTheyGave');
 			fclose(stdin);
 			fopen("/dev/null", "r");
 			execvp(argArray[0], argArray);	
