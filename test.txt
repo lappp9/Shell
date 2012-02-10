@@ -8,4 +8,7 @@ ls
 sleep 1 &
 sleep 23 &
 jobs
+cat output.txt
+cat test.txt > output.txt
+cat output.txt
 exit
