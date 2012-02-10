@@ -1,15 +1,11 @@
-echo "show native programs\n"
 ls
 pwd
 ps
-echo "show changing directory up and then to home\n"
-cd ..
+cd ../
 ls
-cd 
+cd dist/
 ls
-echo "show running background processes"
 sleep 1 &
 sleep 23 &
-echo "show listing background processes"
 jobs
 exit
