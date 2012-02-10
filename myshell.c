@@ -17,6 +17,44 @@ static zombieKiller(int childCount, int children[], int status){
 	}
 }
 
+int commandFinder(char* argArray[]){
+	//check for no input
+	if(argArray[0] == NULL){
+		return 0;
+	}
+	//check for exit command
+	if(strcmp(argArray[0],"exit") == 0 ){
+		printf("Exiting...\n");
+		exit(0);
+	}	
+	//check for changing directory
+	if(strcmp(argArray[0], "cd" ) == 0){
+		
+		if(argArray[1] == NULL){
+			chdir(getenv("HOME"));
+		}
+		else if(chdir(argArray[1])==-1){
+			printf(" cd: %s: No such file or directory\n",argArray[1]);
+		}
+
+		return 0;
+	}
+	//check for jobs command
+	if(strcmp(argArray[0],"jobs") == 0){
+		int j;
+		char* alive;
+		for(j = 0; j<childCount; j++){
+			if(kill(children[j],0) == 0){
+				alive = "Running";
+			}
+			else{
+				alive = "Done";
+			}
+			printf("[%d]    %s        %d\n", (childCount-j), alive,children[j]);
+		}
+	}
+}
+
 int main(int argc, char **argv, char *envp[]){
 	//just add the pid to the children array each time one is made
 	int children[1000];
@@ -44,48 +82,13 @@ int main(int argc, char **argv, char *envp[]){
 		while (tok != NULL) {
 			//add tok to the array of args
 			argArray[i] = tok;
-			
-			//figure out if there is redirection intended for project 3
-			/*if(strcmp(argArray[i],'<')==0){
-				int redirectCharPos = i;
-				char* direction = "left";
-				printf("left");
-			}	
-			else if (strcmp(argArray[i],'>')==0){
-				int redirectCharPos = i;
-				char* direction = "right";
-				printf("right");
-			}*/
-			//printf ("next argument is: %s\n", argArray[i]);
 			tok = strtok(NULL, whitechars);
 			i++;
 		}
 		argArray[i] = NULL;
 		
-		//check for no input
-		if(argArray[0] == NULL){
-			continue;
-		}
-		//check for exit command
-		if(strcmp(argArray[0],"exit") == 0 ){
-			printf("Exiting...\n");
-			exit(0);
-		}	
-		//check for kill command
-		if(strcmp(argArray[0], "kill") == 0){
-			kill(argArray[1],0);
-		}
-
-		//check for changing directory
-		if(strcmp(argArray[0], "cd" ) == 0){
-			
-			if(argArray[1] == NULL){
-				chdir(getenv("HOME"));
-			}
-			else if(chdir(argArray[1])==-1){
-				printf(" cd: %s: No such file or directory\n",argArray[1]);
-			}
-
+		//check for special commands
+		if(commandFinder(argArray) == 0){
 			continue;
 		}
 		
@@ -96,23 +99,7 @@ int main(int argc, char **argv, char *envp[]){
 			argArray[(i-1)] = NULL;
 		}
 		
-		//now argArray has all the arguments in it
 		//fork into two processes
-		if(strcmp(argArray[0],"jobs") == 0){
-			int j;
-			char* alive;
-			for(j = 0; j<childCount; j++){
-				if(kill(children[j],0) == 0){
-					alive = "Running";
-				}
-				else{
-					alive = "Done";
-				}
-				printf("[%d]    %s        %d\n", (childCount-j), alive,children[j]);
-			}
-			
-		}
-		//come on
 		int pid = fork();
 		int status = 0;
 		if (pid == 0) {
