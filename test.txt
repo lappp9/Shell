@@ -1,10 +1,11 @@
 ls
 pwd
 ps
-cd ..
+cd ../
 ls
-cd 
+cd dist/
 ls
+sleep 1 &
 sleep 23 &
 jobs
 exit
