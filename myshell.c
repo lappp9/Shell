@@ -17,7 +17,7 @@ static zombieKiller(int childCount, int children[], int status){
 	}
 }
 
-static commandFinder(char* argArray[], int childCount, int children[], int *background, int i){
+static commandFinder(char* argArray[], int childCount, int children[], int *background){
 	//check for no input
 	if(argArray[0] == NULL){
 		return;
@@ -51,26 +51,12 @@ static commandFinder(char* argArray[], int childCount, int children[], int *back
 	if(strcmp(argArray[0],"exit") == 0 ){
 		printf("Exiting...\n");
 		exit(0);
-	}
-	
-	//check to see if it should be a background process
-	if(strcmp(argArray[i-1],"&")==0){
-		*background = 1;
-		argArray[(i-1)] = NULL;
-	}
-	
-	//check to see if there should be redirection
-	int j;
-	for(j = 0; j < i; j++){
-		if(strcmp(argArray[j], ">")==0){
-			printf("redirect fo sho");
-		} 
-	}
-		
+	}	
 }
 
 int main(int argc, char **argv, char *envp[]){
 	//just add the pid to the children array each time one is made
+	int background = 0;
 	int children[1000];
 	int childCount = 0;
 	int i, status;
@@ -91,17 +77,7 @@ int main(int argc, char **argv, char *envp[]){
 		char *tok = NULL;
 		tok = strtok(line, whitechars);
 		
-		int i = 0;
-		/*
-		//parse for command
-		while (tok != NULL) {
-			//add tok to the array of args
-			argArray[i] = tok;
-			tok = strtok(NULL, whitechars);
-			i++;
-		}
-		argArray[i] = NULL;*/
-		
+		int i = 0;		
 		int redirect = 0;
 		char* targetFile;
 		//parse for command
@@ -116,14 +92,20 @@ int main(int argc, char **argv, char *envp[]){
 			argArray[i] = tok;
 			tok = strtok(NULL, whitechars);
 			i++;
+			
 		}
 		argArray[i] = NULL;
 		
+		//check to see if it should be a background process
+		if(strcmp(argArray[i-1],"&")==0){
+			background = 1;
+			argArray[(i-1)] = NULL;
+		}
 		
 		//check for special commands
 		//check to see if the child will be a background process
 		int background = 0;
-		commandFinder(argArray, childCount, children, &background, i);
+		commandFinder(argArray, childCount, children, &background);
 		
 		if((strcmp(argArray[0],"jobs") == 0) || (strcmp(argArray[0], "cd") == 0) || (argArray[0]==NULL)){
 			continue;
