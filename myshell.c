@@ -6,6 +6,16 @@
 
 
 //gcc -lreadline -lhistory -o myshell myshell.c
+static zombieKiller(int childCount, int children[], int status){
+	int i;
+	for(i=0; i<childCount; i++){
+		if(children[i] != 0){
+			if(waitpid(children[i],&status,WNOHANG) == 0){	
+				continue;
+			}
+		}
+	}
+}
 
 int main(int argc, char **argv, char *envp[]){
 	//just add the pid to the children array each time one is made
@@ -15,13 +25,8 @@ int main(int argc, char **argv, char *envp[]){
 	while(1){
 		
 		//reap zombies before accepting more input
-		for(i=0; i<childCount; i++){
-			if(children[i] != 0){
-				if(waitpid(children[i],&status,WNOHANG) == 0){	
-					continue;
-				}
-			}
-		}
+		zombieKiller(childCount, children, status);
+		
 		char *line = readline("$ ");
 		if(line != NULL){
 			add_history (line);		
