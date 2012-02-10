@@ -17,30 +17,23 @@ static zombieKiller(int childCount, int children[], int status){
 	}
 }
 
-int commandFinder(char* argArray[]){
+static commandFinder(char* argArray[], int childCount, int children[]){
 	//check for no input
 	if(argArray[0] == NULL){
-		return 0;
+		return;
 	}
-	//check for exit command
-	if(strcmp(argArray[0],"exit") == 0 ){
-		printf("Exiting...\n");
-		exit(0);
-	}	
 	//check for changing directory
-	if(strcmp(argArray[0], "cd" ) == 0){
-		
+	else if(strcmp(argArray[0], "cd" ) == 0){
 		if(argArray[1] == NULL){
 			chdir(getenv("HOME"));
 		}
 		else if(chdir(argArray[1])==-1){
 			printf(" cd: %s: No such file or directory\n",argArray[1]);
 		}
-
-		return 0;
+		return;
 	}
 	//check for jobs command
-	if(strcmp(argArray[0],"jobs") == 0){
+	else if(strcmp(argArray[0],"jobs") == 0){
 		int j;
 		char* alive;
 		for(j = 0; j<childCount; j++){
@@ -52,7 +45,13 @@ int commandFinder(char* argArray[]){
 			}
 			printf("[%d]    %s        %d\n", (childCount-j), alive,children[j]);
 		}
+		return;
 	}
+	//check for exit command
+	if(strcmp(argArray[0],"exit") == 0 ){
+		printf("Exiting...\n");
+		exit(0);
+	}	
 }
 
 int main(int argc, char **argv, char *envp[]){
@@ -88,7 +87,8 @@ int main(int argc, char **argv, char *envp[]){
 		argArray[i] = NULL;
 		
 		//check for special commands
-		if(commandFinder(argArray) == 0){
+		commandFinder(argArray, childCount, children);
+		if((strcmp(argArray[0],"jobs") == 0) || (strcmp(argArray[0], "cd") == 0) || (argArray[0]==NULL)){
 			continue;
 		}
 		
@@ -109,8 +109,10 @@ int main(int argc, char **argv, char *envp[]){
 			//you just closed
 			//ex close(1)/
 			//	 FILE* f = fopen('whateverNameTheyGave');
-			fclose(stdin);
-			fopen("/dev/null", "r");
+			if(background == 1){	
+				fclose(stdin);
+				fopen("/dev/null", "r");
+			}
 			execvp(argArray[0], argArray);	
 	   		// this should never be reached, unless there is an error
 			fprintf (stderr, "unknown command: %s\n", argArray[0]);
