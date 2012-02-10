@@ -11,8 +11,17 @@ int main(int argc, char **argv, char *envp[]){
 	//just add the pid to the children array each time one is made
 	int children[1000];
 	int childCount = 0;
+	int i, status;
 	while(1){
 		
+		//reap zombies before accepting more input
+		for(i=0; i<childCount; i++){
+			if(children[i] != 0){
+				if(waitpid(children[i],&status,WNOHANG) == 0){	
+					continue;
+				}
+			}
+		}
 		char *line = readline("$ ");
 		if(line != NULL){
 			add_history (line);		
@@ -81,14 +90,6 @@ int main(int argc, char **argv, char *envp[]){
 			background = 1;
 			argArray[(i-1)] = NULL;
 		}
-		//reap those zombies
-		/*int k;
-		for(k=0; k < childCount; k++){
-			if(waitpid(children[k],&status,WNOHANG) == pid)
-				//this process is still running	
-				//
-		}*/
-		
 		
 		//now argArray has all the arguments in it
 		//fork into two processes
@@ -134,8 +135,6 @@ int main(int argc, char **argv, char *envp[]){
 			}
 			else{
 				waitpid(pid, &status, 0);
-				if(waitpid(pid,&status,WNOHANG) == 0)
-					printf("no zombies");
 			}
 		
 			//if there is an error show it otherwise the loop will replay
