@@ -58,6 +58,14 @@ static commandFinder(char* argArray[], int childCount, int children[], int *back
 		*background = 1;
 		argArray[(i-1)] = NULL;
 	}
+	
+	//check to see if there should be redirection
+	int j;
+	for(j = 0; j < i; j++){
+		if(strcmp(argArray[j], ">")==0){
+			printf("redirect fo sho");
+		} 
+	}
 		
 }
 
@@ -84,6 +92,7 @@ int main(int argc, char **argv, char *envp[]){
 		tok = strtok(line, whitechars);
 		
 		int i = 0;
+		/*
 		//parse for command
 		while (tok != NULL) {
 			//add tok to the array of args
@@ -91,7 +100,25 @@ int main(int argc, char **argv, char *envp[]){
 			tok = strtok(NULL, whitechars);
 			i++;
 		}
+		argArray[i] = NULL;*/
+		
+		int redirect = 0;
+		char* targetFile;
+		//parse for command
+		while (tok != NULL) {
+			//add tok to the array of args
+			//if you come across a redirction make that spot null and later look at i+1 to see where to send stuff
+			if(strcmp(tok, ">")==0){
+				redirect = 1;
+				targetFile = strtok(NULL, whitechars);
+				break;
+			}
+			argArray[i] = tok;
+			tok = strtok(NULL, whitechars);
+			i++;
+		}
 		argArray[i] = NULL;
+		
 		
 		//check for special commands
 		//check to see if the child will be a background process
@@ -101,7 +128,6 @@ int main(int argc, char **argv, char *envp[]){
 		if((strcmp(argArray[0],"jobs") == 0) || (strcmp(argArray[0], "cd") == 0) || (argArray[0]==NULL)){
 			continue;
 		}
-		
 		//fork into two processes
 		int pid = fork();
 		int status = 0;
@@ -110,8 +136,10 @@ int main(int argc, char **argv, char *envp[]){
 			//to be able to redirect the output to a file instead of stdout you close
 			//file descriptor 1 and then immediately open a file which will fill the spot
 			//you just closed
-			//ex close(1)/
-			//	 FILE* f = fopen('whateverNameTheyGave');
+			if(redirect){
+				close(1);
+				FILE* f = fopen(targetFile, "w");
+			}
 			if(background == 1){	
 				fclose(stdin);
 				fopen("/dev/null", "r");

@@ -1,0 +1,11 @@
+ls
+pwd
+ps
+cd ../
+ls
+cd dist/
+ls
+sleep 1 &
+sleep 23 &
+jobs
+exit
