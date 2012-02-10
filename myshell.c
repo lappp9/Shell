@@ -17,7 +17,7 @@ static zombieKiller(int childCount, int children[], int status){
 	}
 }
 
-static commandFinder(char* argArray[], int childCount, int children[], int *background){
+static commandFinder(char* argArray[], int childCount, int children[], int *background, int i){
 	//check for no input
 	if(argArray[0] == NULL){
 		return;
@@ -47,6 +47,12 @@ static commandFinder(char* argArray[], int childCount, int children[], int *back
 		}
 		return;
 	}
+	//check to see if it should be a background process
+	if(strcmp(argArray[i-1],"&")==0){
+		*background = 1;
+		argArray[(i-1)] = NULL;
+	}
+	
 	//check for exit command
 	if(strcmp(argArray[0],"exit") == 0 ){
 		printf("Exiting...\n");
@@ -105,7 +111,7 @@ int main(int argc, char **argv, char *envp[]){
 		//check for special commands
 		//check to see if the child will be a background process
 		int background = 0;
-		commandFinder(argArray, childCount, children, &background);
+		commandFinder(argArray, childCount, children, &background, i);
 		
 		if((strcmp(argArray[0],"jobs") == 0) || (strcmp(argArray[0], "cd") == 0) || (argArray[0]==NULL)){
 			continue;
